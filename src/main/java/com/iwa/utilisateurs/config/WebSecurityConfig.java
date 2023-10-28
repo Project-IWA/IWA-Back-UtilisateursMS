@@ -13,7 +13,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() // Disable CSRF protection
+                //.csrf().disable() // Disable CSRF protection
                 .authorizeRequests()
                 .anyRequest().permitAll(); // Allow all requests
     }

@@ -23,22 +23,43 @@ public class User {
     @Column(name = "id_user")  // This maps the field to the id_user column in the database
     private Long idUser;
 
+    @Column(name = "prenom")
     private String prenom;
+
+    @Column(name = "nom")
     private String nom;
+
+    @Column(name = "username")
+    private String username;
 
     @NotBlank(message = "Email cannot be blank.")
     @Email(message = "Invalid email format.")
+    @Column(name = "email")
     private String email;
 
     @NotBlank(message = "Password cannot be blank.")
     @Size(min = 6, message = "Password must have at least 6 characters.")
+    @Column(name = "password")
     private String password;
-    private String role;
+
+    // role attribute : varchar(50) NOT NULL DEFAULT 'USER'
+    @Column(name = "role")
+    private String role = "USER";
+
+    // enabled : account is enabled or disabled
+    @Column(name = "enabled")
+    private boolean enabled = false;
+
+    @Column(name = "tel")
     private String tel;
+
+    @Column(name = "rue")
     private String rue;
 
     @Column(name = "code_postal")
     private String codePostal;
+
+    @Column(name = "ville")
     private String ville;
 
     @Column(name = "numero_siret")
@@ -46,14 +67,18 @@ public class User {
 
     @Column(name="doc_justificatif")
     private String docJustificatif;
+
+    @Column(name = "etat")
     private String etat;
 
     @ManyToOne
     @JoinColumn(name = "id_formule")
+    @Column(name = "id_formule")
     private Formule formule;
 
     @ManyToOne
     @JoinColumn(name = "id_etablissement")
+    @Column(name = "id_etablissement")
     private Etablissement etablissement;
 
     // Dates for subscription should be of type LocalDate or Date.
