@@ -1,4 +1,4 @@
-package com.iwa.utilisateurs.config;
+package com.iwa.utilisateurs.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

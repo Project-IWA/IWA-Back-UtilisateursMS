@@ -1,6 +1,6 @@
 package com.iwa.utilisateurs.controller;
 
-import com.iwa.utilisateurs.model.User;
+import com.iwa.utilisateurs.model.UserEntity;
 import com.iwa.utilisateurs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,29 +19,29 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserEntity>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<UserEntity> getUserByEmail(@PathVariable String email) {
         return userService.getUserByEmail(email)
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
-        // Make sure to set the user's ID from the path variable
-        user.setIdUser(id);
-        return new ResponseEntity<>(userService.updateUser(user), HttpStatus.OK);
+    public ResponseEntity<UserEntity> updateUser(@PathVariable Long id, @Valid @RequestBody UserEntity userEntity) {
+        // Make sure to set the userEntity's ID from the path variable
+        userEntity.setIdUser(id);
+        return new ResponseEntity<>(userService.updateUser(userEntity), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

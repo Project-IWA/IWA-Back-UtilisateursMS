@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -16,7 +18,7 @@ import javax.validation.constraints.Size;
 @Builder            // Provides a builder pattern for object creation
 @NoArgsConstructor  // Generates a no-args constructor
 @AllArgsConstructor // Generates a constructor with all fields as arguments
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +31,11 @@ public class User {
     @Column(name = "nom")
     private String nom;
 
+    @NotBlank(message = "username cannot be blank.")
     @Column(name = "username")
     private String username;
 
-    @NotBlank(message = "Email cannot be blank.")
+    //@NotBlank(message = "Email cannot be blank.")
     @Email(message = "Invalid email format.")
     @Column(name = "email")
     private String email;
@@ -42,9 +45,12 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    // role attribute : varchar(50) NOT NULL DEFAULT 'USER'
-    @Column(name = "role")
-    private String role = "USER";
+    // The join table user_roles that contains the id_user and its corresponding
+    // roles with id_role
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id_role"))
+    private List<Role> roles = new ArrayList<>();
 
     // enabled : account is enabled or disabled
     @Column(name = "enabled")
@@ -73,12 +79,10 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "id_formule")
-    @Column(name = "id_formule")
     private Formule formule;
 
     @ManyToOne
     @JoinColumn(name = "id_etablissement")
-    @Column(name = "id_etablissement")
     private Etablissement etablissement;
 
     // Dates for subscription should be of type LocalDate or Date.
