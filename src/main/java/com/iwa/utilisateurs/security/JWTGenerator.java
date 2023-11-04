@@ -33,6 +33,7 @@ public class JWTGenerator {
         System.out.println(token);
         return token;
     }
+
     public String getUsernameFromJWT(String token){
         Claims claims = Jwts.parser()
                 .setSigningKey(key)
