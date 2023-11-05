@@ -23,17 +23,21 @@ import java.io.IOException;
  * This class doesn't redirect users to a login page because it's intended for REST APIs where an HTTP status code
  * is the preferred way to handle authentication errors.
  * */
-@Component
-public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
-    // The `commence` method is called whenever an `AuthenticationException` is thrown
-    // This usually means the user is trying to access a protected resource without being authenticated
-    @Override
-    public void commence(HttpServletRequest request,
-                         HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException {
-        // Respond with a 401 Unauthorized error and the exception message
-        // This is typically what you'd want to do if a user tries to access a secure REST resource without proper authentication
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
-    }
-}
+/***
+ * @Component
+ * public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
+ *
+ *     // The `commence` method is called whenever an `AuthenticationException` is thrown
+ *     // This usually means the user is trying to access a protected resource without being authenticated
+ *     @Override
+ *     public void commence(HttpServletRequest request,
+ *                          HttpServletResponse response,
+ *                          AuthenticationException authException) throws IOException, ServletException {
+ *         // Respond with a 401 Unauthorized error and the exception message
+ *         // This is typically what you'd want to do if a user tries to access a secure REST resource without proper authentication
+ *         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+ *     }
+ * }
+ * */
+

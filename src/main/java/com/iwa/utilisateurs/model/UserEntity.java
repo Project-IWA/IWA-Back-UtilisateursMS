@@ -10,7 +10,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -81,9 +83,19 @@ public class UserEntity {
     @JoinColumn(name = "id_formule")
     private Formule formule;
 
+    // Relation One-to-Many pour l'établissement principal
     @ManyToOne
-    @JoinColumn(name = "id_etablissement")
-    private Etablissement etablissement;
+    @JoinColumn(name = "id_etablissement", referencedColumnName = "id_etablissement")
+    private Etablissement etablissementPrincipal;
+
+    // Relation Many-to-Many pour avoir_etablissement
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "avoir_etablissement",
+            joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id_user"),
+            inverseJoinColumns = @JoinColumn(name = "id_etablissement", referencedColumnName = "id_etablissement")
+    )
+    private Set<Etablissement> etablissements = new HashSet<>();
 
     // Dates for subscription should be of type LocalDate or Date.
     // I'm keeping it simple here for brevity.

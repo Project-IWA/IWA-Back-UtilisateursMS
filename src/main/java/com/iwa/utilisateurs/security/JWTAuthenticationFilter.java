@@ -30,55 +30,59 @@ import java.io.IOException;
 * */
 
 // Annotating this class as a Component so it can be detected during classpath scanning
-@Component
-public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    // Injecting the JWTGenerator and CustomUserDetailsService beans
-    @Autowired
-    private JWTGenerator tokenGenerator;
+/**
+ * @Component
+ * public class JWTAuthenticationFilter extends OncePerRequestFilter {
+ *
+ *     // Injecting the JWTGenerator and CustomUserDetailsService beans
+ *     @Autowired
+ *     private JWTGenerator tokenGenerator;
+ *
+ *     @Autowired
+ *     private CustomUserDetailsService customUserDetailsService;
+ *
+ *     // The main method that intercepts each request and processes it
+ *     @Override
+ *     protected void doFilterInternal(HttpServletRequest request,
+ *                                     HttpServletResponse response,
+ *                                     FilterChain filterChain) throws ServletException, IOException {
+ *         // Attempt to extract a JWT token from the request
+ *         String token = getJWTFromRequest(request);
+ *         System.out.println("token: " + token);
+ *
+ *         // Check if the token is present and valid
+ *         if(StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
+ *             // Extract the username from the valid token
+ *             String username = tokenGenerator.getUsernameFromJWT(token);
+ *
+ *             // Load the user details associated with that username
+ *             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+ *             // Create an Authentication object using the UserDetails
+ *             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null,
+ *                     userDetails.getAuthorities());
+ *             // Set the authentication details from the request
+ *             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+ *             // Set the Authentication in the SecurityContext
+ *             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+ *         }
+ *         // Continue the filter chain with the modified or unmodified request and response objects
+ *         filterChain.doFilter(request, response);
+ *     }
+ *
+ *     // Helper method to extract the JWT from the Authorization header of the request
+ *     private String getJWTFromRequest(HttpServletRequest request) {
+ *         // Retrieve the Authorization header from the request
+ *         String bearerToken = request.getHeader("Authorization");
+ *         // Check if the header is present and starts with "Bearer "
+ *         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+ *             // Extract the JWT token by removing "Bearer " prefix
+ *             return bearerToken.substring(7, bearerToken.length());
+ *         }
+ *         // Return null if no JWT found in the request header
+ *         return null;
+ *     }
+ * }
+ * **/
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-
-    // The main method that intercepts each request and processes it
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        // Attempt to extract a JWT token from the request
-        String token = getJWTFromRequest(request);
-        System.out.println("token: " + token);
-
-        // Check if the token is present and valid
-        if(StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
-            // Extract the username from the valid token
-            String username = tokenGenerator.getUsernameFromJWT(token);
-
-            // Load the user details associated with that username
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-            // Create an Authentication object using the UserDetails
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null,
-                    userDetails.getAuthorities());
-            // Set the authentication details from the request
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            // Set the Authentication in the SecurityContext
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        }
-        // Continue the filter chain with the modified or unmodified request and response objects
-        filterChain.doFilter(request, response);
-    }
-
-    // Helper method to extract the JWT from the Authorization header of the request
-    private String getJWTFromRequest(HttpServletRequest request) {
-        // Retrieve the Authorization header from the request
-        String bearerToken = request.getHeader("Authorization");
-        // Check if the header is present and starts with "Bearer "
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            // Extract the JWT token by removing "Bearer " prefix
-            return bearerToken.substring(7, bearerToken.length());
-        }
-        // Return null if no JWT found in the request header
-        return null;
-    }
-}
 

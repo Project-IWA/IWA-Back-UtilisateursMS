@@ -1,19 +1,24 @@
 package com.iwa.utilisateurs.service;
 
 import com.iwa.utilisateurs.dto.RegisterDTO;
+import com.iwa.utilisateurs.exception.EtablissementNotFoundException;
 import com.iwa.utilisateurs.exception.UserAlreadyExistsException;
 import com.iwa.utilisateurs.exception.UserNotFoundException;
+import com.iwa.utilisateurs.model.Etablissement;
 import com.iwa.utilisateurs.model.Role;
 import com.iwa.utilisateurs.model.UserEntity;
+import com.iwa.utilisateurs.repository.EtablissementRepository;
 import com.iwa.utilisateurs.repository.RoleRepository;
 import com.iwa.utilisateurs.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -23,6 +28,9 @@ public class UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private EtablissementRepository etablissementRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -69,9 +77,83 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        if(!userRepository.existsById(id)) {
-            throw new UserNotFoundException(id);
-        }
+        // Check if user exists
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+
+        // Clear the associations between the user and roles
+        user.getRoles().clear();
+        userRepository.save(user);
+
+        // Now you can delete the user safely
         userRepository.deleteById(id);
     }
+
+    // Gestion des établissements du user
+
+    // Get all etablissements of a user
+    public Set<Etablissement> getEtablissements(Long userId) {
+        // Check if user exists
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        return user.getEtablissements();
+    }
+
+    // Add an etablissement to a user
+    @Transactional
+    public void addEtablissement(Long userId, Long etablissementId) {
+        // Check if user exists
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        // Check if etablissement exists
+        Etablissement etablissement = etablissementRepository.findById(etablissementId)
+                .orElseThrow(() -> new EtablissementNotFoundException(etablissementId));
+
+        // add the etablissement to the user
+        user.getEtablissements().add(etablissement);
+        userRepository.save(user);
+    }
+
+    // Remove an etablissement from a user
+    @Transactional
+    public void removeEtablissement(Long userId, Long etablissementId) {
+
+        // Check if user exists
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        // Check if etablissement exists
+        Etablissement etablissement = etablissementRepository.findById(etablissementId)
+                .orElseThrow(() -> new EtablissementNotFoundException(etablissementId));
+
+        // Remove the etablissement from the user
+        user.getEtablissements().remove(etablissement);
+
+        // Si l'établissement à supprimer est l'établissement principal, le réinitialiser
+        if (user.getEtablissementPrincipal() != null &&
+                user.getEtablissementPrincipal().getIdEtablissement().equals(etablissementId)) {
+            user.setEtablissementPrincipal(null);
+        }
+        userRepository.save(user);
+    }
+
+    // Set the principal etablissement of a user
+    @Transactional
+    public void setEtablissementPrincipal(Long userId, Long etablissementId) {
+        // Check if user exists
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        // Check if etablissement exists
+        Etablissement etablissement = etablissementRepository.findById(etablissementId)
+                .orElseThrow(() -> new EtablissementNotFoundException(etablissementId));
+
+        // Set the etablissement as the principal etablissement of the user
+        user.setEtablissementPrincipal(etablissement);
+        userRepository.save(user);
+    }
+
+
+
 }

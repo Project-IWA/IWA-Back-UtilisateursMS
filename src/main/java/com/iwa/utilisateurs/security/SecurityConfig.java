@@ -17,45 +17,48 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 
-public class SecurityConfig{
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     private CustomUserDetailsService userDetailsService;
-    private JwtAuthEntryPoint authEntryPoint;
+
+    //private JwtAuthEntryPoint authEntryPoint;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthEntryPoint authEntryPoint) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
-        this.authEntryPoint = authEntryPoint;
     }
 
     // Enable this config to allow all requests but let the class extends WebSecurityConfigurerAdapter
-    /**@Override
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable() // Disable CSRF protection
                 .authorizeRequests()
                 .anyRequest().permitAll(); // Allow all requests
-    }*/
-
-    // Enable this config to allow only authenticated requests with a valid JWT with filters
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(authEntryPoint)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
     }
+
+    // Enable this config to allow only authenticated requests with a valid JWT with filters but remove the class extends WebSecurityConfigurerAdapter
+    /**
+     *     @Bean
+     *     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+     *         http
+     *                 .csrf().disable()
+     *                 .exceptionHandling()
+     *                 .authenticationEntryPoint(authEntryPoint)
+     *                 .and()
+     *                 .sessionManagement()
+     *                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+     *                 .and()
+     *                 .authorizeRequests()
+     *                 .antMatchers("/api/auth/**").permitAll()
+     *                 .anyRequest().authenticated()
+     *                 .and()
+     *                 .httpBasic();
+     *         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+     *         return http.build();
+     *     }
+     * */
+
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -68,9 +71,14 @@ public class SecurityConfig{
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public  JWTAuthenticationFilter jwtAuthenticationFilter() {
-        return new JWTAuthenticationFilter();
-    }
+
+    // Enable this config to allow only authenticated requests with a valid JWT with filters but remove the class extends WebSecurityConfigurerAdapter
+    /**
+     *     @Bean
+     *     public  JWTAuthenticationFilter jwtAuthenticationFilter() {
+     *         return new JWTAuthenticationFilter();
+     *     }
+     * */
+
 }
 
