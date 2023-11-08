@@ -11,6 +11,8 @@ import com.iwa.utilisateurs.repository.EtablissementRepository;
 import com.iwa.utilisateurs.repository.RoleRepository;
 import com.iwa.utilisateurs.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,10 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public Optional<UserEntity> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public Optional<UserEntity> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
@@ -52,6 +58,8 @@ public class UserService {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(registerDTO.getUsername());
         userEntity.setPassword(registerDTO.getPassword());
+
+        System.out.println("userEntity: " + userEntity);
 
         // check for existing user
         if(userRepository.existsByUsername(userEntity.getUsername())) {
@@ -65,6 +73,9 @@ public class UserService {
 
         Role roles = roleRepository.findByName("USER").get();
         userEntity.setRoles(Collections.singletonList(roles));
+
+        System.out.println("roles: " + roles);
+        System.out.println("userEntity.roles: " + userEntity.getRoles());
 
         return userRepository.save(userEntity);
     }
@@ -153,7 +164,5 @@ public class UserService {
         user.setEtablissementPrincipal(etablissement);
         userRepository.save(user);
     }
-
-
 
 }

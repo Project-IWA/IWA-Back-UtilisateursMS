@@ -1,14 +1,18 @@
 package com.iwa.utilisateurs.controller;
 
+import com.iwa.utilisateurs.dto.UserDetailsDTO;
 import com.iwa.utilisateurs.exception.EtablissementNotFoundException;
 import com.iwa.utilisateurs.exception.UserAlreadyExistsException;
 import com.iwa.utilisateurs.exception.UserNotFoundException;
 import com.iwa.utilisateurs.model.Etablissement;
 import com.iwa.utilisateurs.model.UserEntity;
+import com.iwa.utilisateurs.service.CustomUserDetailsService;
 import com.iwa.utilisateurs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +27,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
     @GetMapping
     public ResponseEntity<List<UserEntity>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
@@ -32,6 +37,13 @@ public class UserController {
     public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/by-customusername/{username}")
+    public ResponseEntity<UserDetailsDTO> getUserByUserName(@PathVariable String username) {
+        return userService.getUserByUsername(username)
+                .map(user -> new ResponseEntity<>(new UserDetailsDTO(user.getUsername(), user.getPassword(), user.getRoles()), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

@@ -8,6 +8,7 @@ import com.iwa.utilisateurs.model.UserEntity;
 import com.iwa.utilisateurs.security.JWTGenerator;
 import com.iwa.utilisateurs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,12 +45,15 @@ public class AuthController {
     * */
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
         try {
+            System.out.println("registerDTO: " + registerDTO);
             // call the service to create the user
             UserEntity registeredUserEntity = userService.createUser(registerDTO);
+            System.out.println("registeredUserEntity: " + registeredUserEntity);
             return new ResponseEntity<>(registeredUserEntity, HttpStatus.CREATED);
         } catch (UserAlreadyExistsException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
             return new ResponseEntity<>("An error occurred while registering the userEntity.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
