@@ -22,7 +22,7 @@ public class Etablissement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_etablissement")  // This maps the field to the id_etablissement column in the database
-    private Long idEtablissement;
+    private Long id_etablissement;
 
     private String nom;
 

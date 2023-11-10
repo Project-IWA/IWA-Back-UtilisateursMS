@@ -143,7 +143,7 @@ public class UserService {
 
         // Si l'établissement à supprimer est l'établissement principal, le réinitialiser
         if (user.getEtablissementPrincipal() != null &&
-                user.getEtablissementPrincipal().getIdEtablissement().equals(etablissementId)) {
+                user.getEtablissementPrincipal().getId_etablissement().equals(etablissementId)) {
             user.setEtablissementPrincipal(null);
         }
         userRepository.save(user);
