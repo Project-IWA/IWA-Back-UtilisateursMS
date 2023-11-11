@@ -1,6 +1,8 @@
 package com.iwa.utilisateurs.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,10 +19,12 @@ public class Formule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_formule")  // This maps the field to the id_formule column in the database
-    private Long id_formule;
+    @JsonProperty("id_formule")
+    private Long idFormule;
 
     @Column(name = "type_formule")
-    private String type_formule;
+    @JsonProperty("type_formule")
+    private String typeFormule;
 
     // Getters, setters, and other necessary methods...
 }

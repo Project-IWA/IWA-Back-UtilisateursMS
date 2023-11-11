@@ -1,5 +1,6 @@
 package com.iwa.utilisateurs.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +19,8 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_role")
-    private int id_role;
+    @JsonProperty("id_role")
+    private int idRole;
 
     private String name;
 }

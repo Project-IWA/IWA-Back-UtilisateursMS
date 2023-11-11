@@ -33,7 +33,7 @@ public class FormuleController {
     @PutMapping("/{id}")
     public Formule update(@PathVariable Long id, @RequestBody Formule formule) {
         // Ensure the ID is set to the path variable
-        formule.setId_formule(id);
+        formule.setIdFormule(id);
         return service.save(formule);
     }
 

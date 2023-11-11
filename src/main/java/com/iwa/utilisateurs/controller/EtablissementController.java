@@ -33,7 +33,7 @@ public class EtablissementController {
     @PutMapping("/{id}")
     public Etablissement update(@PathVariable Long id, @RequestBody Etablissement etablissement) {
         // Ensure the ID is set to the path variable
-        etablissement.setId_etablissement(id);
+        etablissement.setIdEtablissement(id);
         return service.save(etablissement);
     }
 
