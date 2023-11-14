@@ -27,7 +27,6 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_user")  // This maps the field to the id_user column in the database
-    @JsonProperty("id_user")
     private Long idUser;
 
     @Column(name = "prenom")
@@ -64,22 +63,25 @@ public class UserEntity {
     @Column(name = "tel")
     private String tel;
 
+    @Column(name = "num_rue")
+    private String numRue;
+
     @Column(name = "rue")
     private String rue;
 
     @Column(name = "code_postal")
-    @JsonProperty("code_postal")
     private String codePostal;
 
     @Column(name = "ville")
     private String ville;
 
+    @Column(name = "pays")
+    private String pays;
+
     @Column(name = "numero_siret")
-    @JsonProperty("numero_siret")
     private String numeroSiret;
 
     @Column(name="doc_justificatif")
-    @JsonProperty("doc_justificatif")
     private String docJustificatif;
 
     @Column(name = "etat")
@@ -87,13 +89,11 @@ public class UserEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_formule")
-    @JsonProperty("id_formule")
     private Formule formule;
 
     // Relation One-to-Many pour l'établissement principal
     @ManyToOne
     @JoinColumn(name = "id_etablissement", referencedColumnName = "id_etablissement")
-    @JsonProperty("id_etablissement")
     private Etablissement etablissementPrincipal;
 
     // Relation Many-to-Many pour avoir_etablissement
@@ -109,11 +109,9 @@ public class UserEntity {
     // I'm keeping it simple here for brevity.
 
     @Column(name = "date_debut_souscription")
-    @JsonProperty("date_debut_souscription")
     private String dateDebutSouscription;
 
     @Column(name = "date_fin_souscription")
-    @JsonProperty("date_fin_souscription")
     private String dateFinSouscription;
 
     // Getters, setters, and other necessary methods...

@@ -9,6 +9,7 @@ import java.security.Key;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -16,12 +17,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class JWTGenerator {
 
-    private String key  = SecurityConstants.JWT_SECRET;
+    @Value("${jwt.secret}")
+    private String key;
+
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
+        Date expireDate = new Date(currentDate.getTime() + jwtExpiration);
 
         String token = Jwts.builder()
                 .setSubject(username)

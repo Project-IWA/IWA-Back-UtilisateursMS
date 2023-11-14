@@ -19,11 +19,9 @@ public class Formule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_formule")  // This maps the field to the id_formule column in the database
-    @JsonProperty("id_formule")
     private Long idFormule;
 
     @Column(name = "type_formule")
-    @JsonProperty("type_formule")
     private String typeFormule;
 
     // Getters, setters, and other necessary methods...
