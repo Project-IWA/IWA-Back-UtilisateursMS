@@ -16,6 +16,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,12 +32,16 @@ public class JWTGenerator {
     @Autowired
     private UserService userService;
 
-    private String key  = SecurityConstants.JWT_SECRET;
+    @Value("${jwt.secret}")
+    private String key;
+
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
+        Date expireDate = new Date(currentDate.getTime() + jwtExpiration);
 
         // Retrieve the user using the UserService
         UserEntity userEntity = userService.getUserByUsername(username)
