@@ -66,26 +66,6 @@ public class JWTGenerator {
         return claims.getSubject();
     }
 
-    public UserDetails extractUserDetailsFromJWT(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(key.getBytes(StandardCharsets.UTF_8))
-                .parseClaimsJws(token)
-                .getBody();
-
-        String username = claims.getSubject();
-        Long userId = claims.get("userId", Long.class);
-        List<String> roles = claims.get("roles", List.class);
-
-        // Convert roles to GrantedAuthority objects
-        List<GrantedAuthority> authorities = roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-
-        // Return the UserDetails object
-        return new User(username, "", authorities);
-    }
-
-
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
