@@ -71,7 +71,13 @@ public class UserService {
 
         // set the role ("USER") by default
 
-        Role roles = roleRepository.findByName("USER").get();
+        // Here I need to create the role if it doesn't exist
+        Role roles = roleRepository.findByName("USER").orElseGet(() -> {
+            Role newUserRole = new Role();
+            newUserRole.setName("USER");
+            return roleRepository.save(newUserRole);
+        });
+
         userEntity.setRoles(Collections.singletonList(roles));
 
         System.out.println("roles: " + roles);

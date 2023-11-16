@@ -1,20 +1,35 @@
 package com.iwa.utilisateurs.security;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+import com.iwa.utilisateurs.model.Role;
+import com.iwa.utilisateurs.model.UserEntity;
+import com.iwa.utilisateurs.service.UserService;
 import io.jsonwebtoken.Jwts;
 
 import java.security.Key;
+import java.util.List;
+import java.util.stream.Collectors;
 //import java.security.KeyPair;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JWTGenerator {
+
+    @Autowired
+    private UserService userService;
 
     private String key  = SecurityConstants.JWT_SECRET;
 
@@ -23,12 +38,21 @@ public class JWTGenerator {
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
 
+        // Retrieve the user using the UserService
+        UserEntity userEntity = userService.getUserByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+
         String token = Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt( new Date())
+                .claim("userId", userEntity.getIdUser()) // Add user ID as a claim
+                .claim("roles", userEntity.getRoles().stream() // Add roles as a claim
+                        .map(Role::getName)
+                        .collect(Collectors.toList()))
+                .setIssuedAt(currentDate)
                 .setExpiration(expireDate)
-                .signWith(SignatureAlgorithm.HS512, key)
+                .signWith(SignatureAlgorithm.HS512, key.getBytes(StandardCharsets.UTF_8))
                 .compact();
+
         System.out.println("New token :");
         System.out.println(token);
         return token;
@@ -41,6 +65,26 @@ public class JWTGenerator {
                 .getBody();
         return claims.getSubject();
     }
+
+    public UserDetails extractUserDetailsFromJWT(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key.getBytes(StandardCharsets.UTF_8))
+                .parseClaimsJws(token)
+                .getBody();
+
+        String username = claims.getSubject();
+        Long userId = claims.get("userId", Long.class);
+        List<String> roles = claims.get("roles", List.class);
+
+        // Convert roles to GrantedAuthority objects
+        List<GrantedAuthority> authorities = roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        // Return the UserDetails object
+        return new User(username, "", authorities);
+    }
+
 
     public boolean validateToken(String token) {
         try {
