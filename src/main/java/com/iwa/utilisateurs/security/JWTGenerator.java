@@ -3,13 +3,10 @@ package com.iwa.utilisateurs.security;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-import com.iwa.utilisateurs.model.Role;
 import com.iwa.utilisateurs.model.UserEntity;
 import com.iwa.utilisateurs.service.UserService;
 import io.jsonwebtoken.Jwts;
 
-import java.security.Key;
-import java.util.List;
 import java.util.stream.Collectors;
 //import java.security.KeyPair;
 import io.jsonwebtoken.Claims;
@@ -19,10 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +32,9 @@ public class JWTGenerator {
     private long jwtExpiration;
 
     public String generateToken(Authentication authentication) {
+        System.out.println("generate token key : " + key);
         String username = authentication.getName();
+        System.out.println("username : " + username);
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + jwtExpiration);
 
@@ -50,9 +45,7 @@ public class JWTGenerator {
         String token = Jwts.builder()
                 .setSubject(username)
                 .claim("userId", userEntity.getIdUser()) // Add user ID as a claim
-                .claim("roles", userEntity.getRoles().stream() // Add roles as a claim
-                        .map(Role::getName)
-                        .collect(Collectors.toList()))
+                .claim("role", userEntity.getRole().name()) // Add user role as a claim
                 .setIssuedAt(currentDate)
                 .setExpiration(expireDate)
                 .signWith(SignatureAlgorithm.HS512, key.getBytes(StandardCharsets.UTF_8))
@@ -65,7 +58,7 @@ public class JWTGenerator {
 
     public String getUsernameFromJWT(String token){
         Claims claims = Jwts.parser()
-                .setSigningKey(key)
+                .setSigningKey(key.getBytes(StandardCharsets.UTF_8))
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
@@ -74,7 +67,7 @@ public class JWTGenerator {
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .setSigningKey(key)
+                    .setSigningKey(key.getBytes(StandardCharsets.UTF_8))
                     .parseClaimsJws(token);
             return true;
         } catch (Exception ex) {

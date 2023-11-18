@@ -8,16 +8,12 @@ import com.iwa.utilisateurs.model.Etablissement;
 import com.iwa.utilisateurs.model.Role;
 import com.iwa.utilisateurs.model.UserEntity;
 import com.iwa.utilisateurs.repository.EtablissementRepository;
-import com.iwa.utilisateurs.repository.RoleRepository;
 import com.iwa.utilisateurs.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -27,9 +23,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Autowired
     private EtablissementRepository etablissementRepository;
@@ -69,20 +62,10 @@ public class UserService {
         // encrypt the userEntity's password then save the userEntity
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
 
-        // set the role ("USER") by default
-
-        // Here I need to create the role if it doesn't exist
-        Role roles = roleRepository.findByName("USER").orElseGet(() -> {
-            Role newUserRole = new Role();
-            newUserRole.setName("USER");
-            return roleRepository.save(newUserRole);
-        });
-
-        userEntity.setRoles(Collections.singletonList(roles));
-
-        System.out.println("roles: " + roles);
-        System.out.println("userEntity.roles: " + userEntity.getRoles());
-
+        // set the role with the value "Recruteur" of the enum Role by default
+        userEntity.setRole(Role.Recruteur);
+        
+        System.out.println("userEntity.role: " + userEntity.getRole());
         return userRepository.save(userEntity);
     }
 
@@ -96,12 +79,6 @@ public class UserService {
     public void deleteUser(Long id) {
         // Check if user exists
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-
-        // Clear the associations between the user and roles
-        user.getRoles().clear();
-        userRepository.save(user);
-
-        // Now you can delete the user safely
         userRepository.deleteById(id);
     }
 

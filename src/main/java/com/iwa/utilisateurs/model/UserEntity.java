@@ -11,10 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -49,12 +46,9 @@ public class UserEntity {
     @Column(name = "password")
     private String password;
 
-    // The join table user_roles that contains the id_user and its corresponding
-    // roles with id_role
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id_user"),
-            inverseJoinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id_role"))
-    private List<Role> roles = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role; // ADMIN, BASIC
 
     // enabled : account is enabled or disabled
     @Column(name = "enabled")
@@ -109,10 +103,10 @@ public class UserEntity {
     // I'm keeping it simple here for brevity.
 
     @Column(name = "date_debut_souscription")
-    private String dateDebutSouscription;
+    private Date dateDebutSouscription;
 
     @Column(name = "date_fin_souscription")
-    private String dateFinSouscription;
+    private Date dateFinSouscription;
 
     // Getters, setters, and other necessary methods...
 }

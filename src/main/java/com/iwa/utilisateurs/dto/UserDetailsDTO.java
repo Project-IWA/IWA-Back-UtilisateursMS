@@ -1,23 +1,21 @@
 package com.iwa.utilisateurs.dto;
 
 import com.iwa.utilisateurs.model.Role;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class UserDetailsDTO{
     private String username;
     private String password;
-    private List<Role> roles = new ArrayList<>();
+
+    private String role;
 
 
-    public UserDetailsDTO(String username, String password, List<Role> roles) {
+    public UserDetailsDTO(String username, String password, String role) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
     }
 
     public String getUsername() {
@@ -28,7 +26,7 @@ public class UserDetailsDTO{
         return password;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public String getRole(){
+        return role;
     }
 }

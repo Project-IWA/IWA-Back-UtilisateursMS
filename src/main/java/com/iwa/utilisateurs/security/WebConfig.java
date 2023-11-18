@@ -16,7 +16,7 @@ public class WebConfig {
                 registry.addMapping("/**") // or specific endpoints
                         //.allowedOrigins("http://yourfrontend.com", "http://localhost:3000") // origins you want to allow
                         .allowedOriginPatterns("*") // origins you want to allow
-                        .allowedMethods("GET", "POST", "PUT", "DELETE") // HTTP methods to allow
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH") // HTTP methods to allow
                         .allowedHeaders("*") // headers you want to allow
                         .allowCredentials(true)
                         //.allowCredentials(false)

@@ -39,7 +39,7 @@ public class UserController {
     @GetMapping("/by-customusername/{username}")
     public ResponseEntity<UserDetailsDTO> getUserByUserName(@PathVariable String username) {
         return userService.getUserByUsername(username)
-                .map(user -> new ResponseEntity<>(new UserDetailsDTO(user.getUsername(), user.getPassword(), user.getRoles()), HttpStatus.OK))
+                .map(user -> new ResponseEntity<>(new UserDetailsDTO(user.getUsername(), user.getPassword(), user.getRole().name()), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
@@ -50,13 +50,19 @@ public class UserController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserEntity> updateUser(@PathVariable Long id, @Valid @RequestBody UserEntity userEntity) {
-        // Make sure to set the userEntity's ID from the path variable
-        userEntity.setIdUser(id);
+    // Only the user itself can update his own profile, and this is done by checking the id of the user in the header
+    @PutMapping
+    public ResponseEntity<UserEntity> updateUser(@Valid @RequestBody UserEntity userEntity,
+                                                 @RequestHeader("AuthUserId") Long idUser) {
+
+        // Check if the id of the user in the header is the same as the id of the user in the body
+        if(idUser != userEntity.getIdUser()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         return new ResponseEntity<>(userService.updateUser(userEntity), HttpStatus.OK);
     }
 
+    // Only the admin can delete a user and this is handled in the api-gateway
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
@@ -65,16 +71,18 @@ public class UserController {
 
     // GESTION DES ÉTABLISSEMENTS D'UN UTILISATEUR
 
-    @GetMapping("/{id}/etablissements")
-    public ResponseEntity<Set<Etablissement>> getEtablissements(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getEtablissements(id), HttpStatus.OK);
+    // Get all etablissements of the connected user (by the id of user in the header)
+    @GetMapping("/etablissements/all")
+    public ResponseEntity<Set<Etablissement>> getEtablissements(@RequestHeader("AuthUserId") Long idUser) {
+        return new ResponseEntity<>(userService.getEtablissements(idUser), HttpStatus.OK);
     }
 
-    // Ajouter un établissement à un utilisateur
-    @PostMapping("/{userId}/etablissements/{etablissementId}")
-    public ResponseEntity<Void> addEtablissementToUser(@PathVariable Long userId, @PathVariable Long etablissementId) {
+    // Ajouter un établissement à un utilisateur (by the id of user in the header)
+    @PostMapping("/etablissements/{etablissementId}")
+    public ResponseEntity<Void> addEtablissementToUser(@PathVariable Long etablissementId,
+                                                       @RequestHeader("AuthUserId") Long idUser) {
         try{
-            userService.addEtablissement(userId, etablissementId);
+            userService.addEtablissement(idUser, etablissementId);
             // return status 201 (created)
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (UserNotFoundException e) {
@@ -88,17 +96,19 @@ public class UserController {
     }
 
     // Supprimer un établissement d'un utilisateur
-    @DeleteMapping("/{userId}/etablissements/{etablissementId}")
-    public ResponseEntity<Void> removeEtablissementFromUser(@PathVariable Long userId, @PathVariable Long etablissementId) {
-        userService.removeEtablissement(userId, etablissementId);
+    @DeleteMapping("/etablissements/{etablissementId}")
+    public ResponseEntity<Void> removeEtablissementFromUser(@PathVariable Long etablissementId,
+                                                            @RequestHeader("AuthUserId") Long idUser) {
+        userService.removeEtablissement(idUser, etablissementId);
         // return https status deleted (204)
         return ResponseEntity.noContent().build();
     }
 
     // Définir l'établissement principal pour un utilisateur
-    @PatchMapping("/{userId}/etablissements/principal/{etablissementId}")
-    public ResponseEntity<Void> setEtablissementPrincipal(@PathVariable Long userId, @PathVariable Long etablissementId) {
-        userService.setEtablissementPrincipal(userId, etablissementId);
+    @PatchMapping("/etablissements/principal/{etablissementId}")
+    public ResponseEntity<Void> setEtablissementPrincipal(@PathVariable Long etablissementId,
+                                                          @RequestHeader("AuthUserId") Long idUser) {
+        userService.setEtablissementPrincipal(idUser, etablissementId);
         // return https status updated (200)
         return ResponseEntity.ok().build();
     }

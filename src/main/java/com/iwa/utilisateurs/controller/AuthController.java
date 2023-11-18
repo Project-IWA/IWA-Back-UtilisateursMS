@@ -3,6 +3,7 @@ package com.iwa.utilisateurs.controller;
 import com.iwa.utilisateurs.dto.AuthResponseDTO;
 import com.iwa.utilisateurs.dto.LoginDTO;
 import com.iwa.utilisateurs.dto.RegisterDTO;
+import com.iwa.utilisateurs.dto.UserAuthDTO;
 import com.iwa.utilisateurs.exception.UserAlreadyExistsException;
 import com.iwa.utilisateurs.model.UserEntity;
 import com.iwa.utilisateurs.security.JWTGenerator;
@@ -32,6 +33,15 @@ public class AuthController {
 
     @Autowired
     private JWTGenerator jwtGenerator;
+
+    @GetMapping
+    public ResponseEntity<UserEntity> getAuthUserByToken(@RequestHeader("AuthUserId") Long userId) {
+        System.out.println("userId: " + userId);
+        Optional<UserEntity> userEntity = userService.getUserById(userId);
+        return userEntity
+                .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
     @PostMapping("/register")
     // First, we use the @Valid annotation to make sure that the request body is valid.
@@ -65,10 +75,13 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
                         loginDto.getPassword()));
-
+        // Set the context and generate the token
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
-        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
+        // get the userEntity and give the dto to the response
+        UserEntity userEntity = userService.getUserByUsername(loginDto.getUsername()).get();
+        UserAuthDTO userAuthDTO = UserAuthDTO.mapFromUserEntity(userEntity);
+        return new ResponseEntity<>(new AuthResponseDTO(token,userAuthDTO), HttpStatus.OK);
     }
 
 

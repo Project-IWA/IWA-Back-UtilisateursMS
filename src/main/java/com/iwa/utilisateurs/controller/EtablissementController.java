@@ -16,7 +16,7 @@ public class EtablissementController {
     private EtablissementService service;
 
     @GetMapping
-    public List<Etablissement> getAll() {
+    public List<Etablissement> getAll(){
         return service.getAll();
     }
 
