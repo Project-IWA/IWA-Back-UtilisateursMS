@@ -22,7 +22,7 @@ public class Formule {
     private Long idFormule;
 
     @Column(name = "type_formule")
-    private String typeFormule;
+    private TypeFormule typeFormule;
 
     // Getters, setters, and other necessary methods...
 }
