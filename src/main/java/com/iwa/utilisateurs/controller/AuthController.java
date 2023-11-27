@@ -36,7 +36,7 @@ public class AuthController {
 
     @GetMapping
     public ResponseEntity<UserEntity> getAuthUserByToken(@RequestHeader("AuthUserId") Long userId) {
-        System.out.println("userId: " + userId);
+        System.out.println("user id sent by token in get auth : " + userId);
         Optional<UserEntity> userEntity = userService.getUserById(userId);
         return userEntity
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))

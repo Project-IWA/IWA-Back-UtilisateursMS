@@ -1,5 +1,6 @@
 package com.iwa.utilisateurs.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.iwa.utilisateurs.model.Etablissement;
 import com.iwa.utilisateurs.model.Formule;
 import com.iwa.utilisateurs.model.Role;
