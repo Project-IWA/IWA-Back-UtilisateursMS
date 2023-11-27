@@ -9,9 +9,9 @@ import com.iwa.utilisateurs.model.UserEntity;
 import com.iwa.utilisateurs.security.JWTGenerator;
 import com.iwa.utilisateurs.service.CustomUserDetailsService;
 import com.iwa.utilisateurs.service.UserService;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(AuthController.class)
 public class AuthControllerTest {
 
