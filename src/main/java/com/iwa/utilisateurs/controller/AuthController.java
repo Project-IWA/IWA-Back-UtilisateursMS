@@ -5,8 +5,10 @@ import com.iwa.utilisateurs.dto.LoginDTO;
 import com.iwa.utilisateurs.dto.RegisterDTO;
 import com.iwa.utilisateurs.dto.UserAuthDTO;
 import com.iwa.utilisateurs.exception.UserAlreadyExistsException;
+import com.iwa.utilisateurs.model.Formule;
 import com.iwa.utilisateurs.model.UserEntity;
 import com.iwa.utilisateurs.security.JWTGenerator;
+import com.iwa.utilisateurs.service.FormuleService;
 import com.iwa.utilisateurs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Role;
@@ -33,6 +35,7 @@ public class AuthController {
 
     @Autowired
     private JWTGenerator jwtGenerator;
+
 
     @GetMapping
     public ResponseEntity<UserEntity> getAuthUserByToken(@RequestHeader("AuthUserId") Long userId) {

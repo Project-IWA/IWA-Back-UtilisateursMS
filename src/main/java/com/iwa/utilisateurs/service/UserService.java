@@ -2,12 +2,12 @@ package com.iwa.utilisateurs.service;
 
 import com.iwa.utilisateurs.dto.RegisterDTO;
 import com.iwa.utilisateurs.exception.EtablissementNotFoundException;
+import com.iwa.utilisateurs.exception.ResourceNotFoundException;
 import com.iwa.utilisateurs.exception.UserAlreadyExistsException;
 import com.iwa.utilisateurs.exception.UserNotFoundException;
-import com.iwa.utilisateurs.model.Etablissement;
-import com.iwa.utilisateurs.model.Role;
-import com.iwa.utilisateurs.model.UserEntity;
+import com.iwa.utilisateurs.model.*;
 import com.iwa.utilisateurs.repository.EtablissementRepository;
+import com.iwa.utilisateurs.repository.FormuleRepository;
 import com.iwa.utilisateurs.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +26,9 @@ public class UserService {
 
     @Autowired
     private EtablissementRepository etablissementRepository;
+
+    @Autowired
+    FormuleService formuleService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -48,10 +51,7 @@ public class UserService {
 
     public UserEntity createUser(RegisterDTO registerDTO) {
         // create a user and map the regiterDTO to the userEntity
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(registerDTO.getUsername());
-        userEntity.setPassword(registerDTO.getPassword());
-
+        UserEntity userEntity = this.mapRegisterDtoToUserEntity(registerDTO);
         System.out.println("userEntity: " + userEntity);
 
         // check for existing user
@@ -146,6 +146,37 @@ public class UserService {
         // Set the etablissement as the principal etablissement of the user
         user.setEtablissementPrincipal(etablissement);
         userRepository.save(user);
+    }
+
+    private UserEntity mapRegisterDtoToUserEntity(RegisterDTO registerDTO) {
+        Formule formule = new Formule();
+        try{
+            formule = formuleService.getById(registerDTO.getIdFormule());
+        }catch(ResourceNotFoundException e){
+            // Find the formule with "typeFormule": "Free" or else create a new one with "typeFormule": "Free".
+            System.out.println("before free formule from bd");
+            Optional<Formule> freeFormule = formuleService.getByTypeFormule(TypeFormule.Free);
+            System.out.println("free formule from bd : " + freeFormule);
+            if (freeFormule.isPresent()){
+                formule = freeFormule.get();
+                System.out.println("free formule is in db");
+            }else{
+                TypeFormule typeFormule = TypeFormule.Free;
+                Formule newFreeFormule = new Formule();
+                newFreeFormule.setTypeFormule(typeFormule);
+                formule = formuleService.save(newFreeFormule);
+            }
+        }
+
+        return UserEntity.builder()
+                .username(registerDTO.getUsername())
+                .password(registerDTO.getPassword())
+                .prenom(registerDTO.getPrenom())
+                .nom(registerDTO.getNom())
+                .formule(formule)
+                .dateDebutSouscription(registerDTO.getDateDebutSouscription())
+                .dateFinSouscription(registerDTO.getDateFinSouscription())
+                .build();
     }
 
 }

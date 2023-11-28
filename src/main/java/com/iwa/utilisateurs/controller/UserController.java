@@ -1,6 +1,8 @@
 package com.iwa.utilisateurs.controller;
 
+import com.iwa.utilisateurs.dto.UserAuthDTO;
 import com.iwa.utilisateurs.dto.UserDetailsDTO;
+import com.iwa.utilisateurs.dto.UserUpdateDTO;
 import com.iwa.utilisateurs.exception.EtablissementNotFoundException;
 import com.iwa.utilisateurs.exception.UserNotFoundException;
 import com.iwa.utilisateurs.model.Etablissement;
@@ -52,13 +54,15 @@ public class UserController {
 
     // Only the user itself can update his own profile, and this is done by checking the id of the user in the header
     @PutMapping
-    public ResponseEntity<UserEntity> updateUser(@Valid @RequestBody UserEntity userEntity,
+    public ResponseEntity<UserEntity> updateUser(@Valid @RequestBody UserUpdateDTO userUpdateDTO,
                                                  @RequestHeader("AuthUserId") Long idUser) {
-
         // Check if the id of the user in the header is the same as the id of the user in the body
-        if(idUser != userEntity.getIdUser()) {
+        if(idUser != userUpdateDTO.getIdUser()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+        // Get the user by id
+        UserEntity userEntity = userService.getUserById(idUser).orElseThrow(() -> new UserNotFoundException(idUser));
+        userEntity.setFieldsFromUserUpdateDTO(userUpdateDTO);
         return new ResponseEntity<>(userService.updateUser(userEntity), HttpStatus.OK);
     }
 

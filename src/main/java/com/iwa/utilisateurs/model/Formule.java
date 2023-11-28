@@ -22,6 +22,7 @@ public class Formule {
     private Long idFormule;
 
     @Column(name = "type_formule")
+    @Enumerated(EnumType.STRING)
     private TypeFormule typeFormule;
 
     // Getters, setters, and other necessary methods...

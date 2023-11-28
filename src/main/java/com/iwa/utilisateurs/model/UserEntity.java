@@ -3,6 +3,9 @@ package com.iwa.utilisateurs.model;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.iwa.utilisateurs.dto.RegisterDTO;
+import com.iwa.utilisateurs.dto.UserAuthDTO;
+import com.iwa.utilisateurs.dto.UserUpdateDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +23,7 @@ import java.util.*;
 @NoArgsConstructor  // Generates a no-args constructor
 @AllArgsConstructor // Generates a constructor with all fields as arguments
 public class UserEntity {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -107,6 +111,12 @@ public class UserEntity {
 
     @Column(name = "date_fin_souscription")
     private Date dateFinSouscription;
+
+    public void setFieldsFromUserUpdateDTO(UserUpdateDTO userUpdateDTO) {
+        this.prenom = userUpdateDTO.getPrenom();
+        this.nom = userUpdateDTO.getNom();
+        this.tel = userUpdateDTO.getTel();
+    }
 
     // Getters, setters, and other necessary methods...
 }

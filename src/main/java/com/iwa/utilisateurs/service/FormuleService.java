@@ -2,11 +2,13 @@ package com.iwa.utilisateurs.service;
 
 import com.iwa.utilisateurs.exception.ResourceNotFoundException;
 import com.iwa.utilisateurs.model.Formule;
+import com.iwa.utilisateurs.model.TypeFormule;
 import com.iwa.utilisateurs.repository.FormuleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FormuleService {
@@ -21,6 +23,10 @@ public class FormuleService {
     public Formule getById(Long id) {
         return repository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Formule with id " + id + " not found"));
+    }
+
+    public Optional<Formule> getByTypeFormule(TypeFormule typeFormule){
+        return repository.findByTypeFormule(typeFormule);
     }
 
     public Formule save(Formule formule) {
